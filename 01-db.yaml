@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: db
+  labels:
+    name: db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+     name: db
+     role: sqldb
+  template:
+    spec:
+      containers:
+        - name: db
+          image: postgres:9.4
+          env:
+          - name: POSTGRES_HOST_AUTH_METHOD
+            value: "trust"
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 0.25
+            requests:
+              memory: 128Mi
+    metadata:
+      labels:
+        name: db
+        role: sqldb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: db
+  name: db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    name: db
+    role: sqldb

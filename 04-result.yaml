@@ -1,0 +1,42 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: result
+  labels:
+    name: result-deployment
+  
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+     name: result
+     role: resultapp
+  template:
+    spec:
+      containers:
+        - name: result
+          image: bencer/example-voting-app-result:metrics-3
+          resources:
+            limits:
+              memory: 64Mi
+            requests:
+              memory: 32Mi
+    metadata:
+      labels:
+        name: result
+        role: resultapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: result
+  name: result
+  
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    name: result
+    role: resultapp
